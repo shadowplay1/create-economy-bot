@@ -1,7 +1,7 @@
 {
   "name": "create-economy-bot",
   "version": "1.0.0",
-  "main": "./dist/src/index.js",
+  "main": "./lib/src/index.js",
   "scripts": {
     "dev": "ts-node ./src/index.ts",
     "build": "tsc"
