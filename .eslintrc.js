@@ -37,6 +37,8 @@ module.exports = {
 		'no-param-reassign': 'off',
 		'consistent-return': 'off',
 		'function-paren-newline': 'off',
+		'no-mixed-spaces-and-tabs': 'off',
+
 		'eol-last': 'warn',
 
 		'@typescript-eslint/consistent-type-definitions': [
@@ -46,6 +48,7 @@ module.exports = {
 
 		'@typescript-eslint/no-unused-vars': 'warn',
 		'@typescript-eslint/explicit-function-return-type': 'warn',
+
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
 		'@typescript-eslint/no-non-null-assertion': 'off',
 		'@typescript-eslint/no-this-alias': 'off',
@@ -74,6 +77,11 @@ module.exports = {
 			{
 				code: 125
 			}
+		],
+
+		indent: [
+			'warn', 
+			4
 		],
 
 		'dot-notation': 'warn',
