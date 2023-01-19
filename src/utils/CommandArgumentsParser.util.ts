@@ -1,18 +1,32 @@
-import { Logger } from './utils/Logger.util'
+import { Letters } from '../types/misc/Letters'
+import { Logger } from './Logger.util'
 
-const availableCommands: AvailableCommand[] = [
-    ['--help', '-h', ['[command]'], 'Displays the help message.'],
-    ['--test', '-t', [], 'Test command.']
+const availableCommands: ICommand[] = [
+    {
+        name: '--help',
+        shortName: '-h',
+        args: {
+            required: [],
+            optional: ['command']
+        },
+        description: 'Displays the help message.'
+    },
+
+    {
+        name: '--test',
+        shortName: '-t',
+        description: 'Test command'
+    }
 ]
 
 const args = process.argv.slice(2)
 
 export class CommandArgumentsParser {
-    public commands: AvailableCommand[]
+    public commands: ICommand[]
     public logger: Logger
 
-    constructor (commands: AvailableCommand[]) {
-        this.commands = commands
+    constructor (commands?: ICommand[]) {
+        this.commands = commands || availableCommands
         this.logger = new Logger()
     }
 
@@ -28,9 +42,17 @@ export class CommandArgumentsParser {
                     'create-economy-bot help:\n\n' +
 					availableCommands
 					    .map(
-					        ([name, shortName, usage, description]) =>
+					        ({ name, shortName, args, description }) =>
 					            'create-economy-bot ' +
-								`${name} (${shortName})${usage.length ? ' ' + usage.join(' ') : ''} - ${description}`
+								`${name} (${shortName})${
+								    args
+								        ? `${args.required.map(arg => `<${arg}>`).join(' ')}` +
+											`${args.optional.length ? ' ' : ''}` +
+
+											`${args.optional.map(arg => `[${arg}]`).join(' ')}` +
+											` - ${description}`
+								        : ''
+								}`
 					    )
 					    .join('\n')
 
@@ -59,22 +81,23 @@ export class CommandArgumentsParser {
 }
 
 
-const letters = 'qwertyuiopasdfghjklzxcvbnm'.split('') as const
+// const letters = 'qwertyuiopasdfghjklzxcvbnm'.split('') as const
 
 type CommandLineName = `--${string}`
-type ShortCommandLineName = `-${typeof letters}`
+type ShortCommandLineName = `-${Letters}`
 
-// type AvailableCommand = [CommandLineArgument, ShortCommandLineArgument, string[], string]
+// type ICommand = [CommandLineArgument, ShortCommandLineArgument, string[], string]
 
 // eslint-disable-next-line
 interface ICommand {
 	name: CommandLineName
 	shortName: ShortCommandLineName
-	args: Arguments
+	args?: IArguments
+	description: string
 }
 
-// eslint-disable-next-line
 interface IArguments {
 	required: string[]
 	optional: string[]
 }
+

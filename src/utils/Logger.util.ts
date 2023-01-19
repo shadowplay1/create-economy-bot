@@ -1,4 +1,4 @@
-import { consoleColors as colors } from '../colors.structure'
+import { consoleColors as colors } from '../structures/colors.structure'
 
 export class Logger {
     public info(message: string): void {
@@ -17,3 +17,4 @@ export class Logger {
         return console.log(`${colors.lightyellow}${message}${colors.reset}`)
     }
 }
+
