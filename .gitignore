@@ -1,4 +1,7 @@
 node_modules/
-dist/
 
+# build files
+lib/
+
+# vim swap files
 *.sw[nop]

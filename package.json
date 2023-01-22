@@ -6,7 +6,9 @@
     "dev": "ts-node ./src/index.ts",
     "build": "tsc",
     "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix"
+    "lint:fix": "eslint ./src --fix",
+    "templates:lint": "eslint ./templates --config ./.eslintrc.js",
+    "templates:lint:fix": "eslint ./templates --fix --config ./.eslintrc.js"
   },
   "keywords": [
     "discord",

@@ -16,8 +16,6 @@
 		"types": [
 			"node"
 		],
-		"declaration": true,
-		"declarationDir": "./types",
 		"sourceMap": true,
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
@@ -28,7 +26,7 @@
 		"skipDefaultLibCheck": false,
 		"resolveJsonModule": true,
 		"paths": {
-			"discord-achievements": [
+			"create-economy-bot": [
 				"./types/index.d.ts"
 			]
 		}

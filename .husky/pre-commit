@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run lint && npm run build
+is_templates_dir() {
+    node -e "process.cwd().endsWith('templates') ? process.exit(0) : process.exit(1)"
+}
+
+if is_templates_dir; then
+    npm run templates:lint:fix
+else
+    npm run lint:fix && npm run build
+fi

@@ -1,4 +1,7 @@
 .git/
-src/
 
+src/
+templates/
+
+# vim swap files
 *.sw[nop]

@@ -17,4 +17,3 @@ export class Logger {
         return console.log(`${colors.lightyellow}${message}${colors.reset}`)
     }
 }
-
