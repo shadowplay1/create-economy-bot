@@ -3,3 +3,5 @@ node_modules/
 # vim swap files
 *.sw[nop]
 
+package-lock.json
+/.env

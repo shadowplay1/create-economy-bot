@@ -1,6 +1,6 @@
-import { Message, Interaction } from 'discord.js';
+import { Message, Interaction } from 'discord.js'
 
-export default interface CommandOptions<TInteraction = Interaction> {
+export default interface ICommandOptions<TInteraction = Interaction> {
     message?: Message;
     interaction?: TInteraction;
     messageInteraction: Message | TInteraction;

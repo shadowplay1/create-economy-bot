@@ -1,9 +1,9 @@
-import EventHandler from "../core/EventHandler";
+import EventHandler from '../core/EventHandler'
 
 export default class ReadyEventHandler extends EventHandler {
-    name = "ready";
+    name = 'ready'
 
     async execute(): Promise<any> {
-        console.log(`The bot has logged in. Loaded ${this.client.commands.size} commands.`);
+        console.log(`The bot has logged in. Loaded ${this.client.commands.size} commands.`)
     }
 }
