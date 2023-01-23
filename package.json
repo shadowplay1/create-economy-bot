@@ -1,0 +1,23 @@
+{
+	"name": "create-economy-bot-templates",
+	"version": "1.0.0",
+	"description": "",
+	"main": "",
+	"dependencies": {},
+	"devDependencies": {},
+	"scripts": {
+		"templates:lint": "eslint ./templates --config ./.eslintrc.js",
+		"templates:lint:fix": "eslint ./templates --fix --config ./.eslintrc.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://shadowplay1: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@github.com/shadowplay1/create-economy-bot.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/shadowplay1/create-economy-bot/issues"
+	},
+	"homepage": "https://github.com/shadowplay1/create-economy-bot#readme"
+}
