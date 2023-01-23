@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from 'discord.js'
 import Command from '../../core/Command'
-import CommandOptions from '../../types/CommandOptions'
+import CommandOptions from '../../types/ICommandOptions'
 
 export default class HelloCommand extends Command {
     name = 'hello'
