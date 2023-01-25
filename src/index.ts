@@ -21,7 +21,7 @@ const options: IOption[] = [
                         'create-economy-bot ' +
                         `${names.join(', ')} (${shortNames.join(', ')})${args ?
                             `${args.required.map(arg => `<${arg}>`).join(' ')}` +
-                            `${args.optional.length ? ' ' : ''}` +
+                            `${args.optional.length ? ' ' : ''} ` +
 
                             `${args.optional.map(arg => `[${arg}]`).join(' ')}` +
                             ` - ${description}`
@@ -36,29 +36,30 @@ const options: IOption[] = [
         names: ['--test'],
         shortNames: ['-t'],
         description: 'Test command',
-		args: {
-			required: ['reqarg1'],
-			optional: ['optarg1']
-		},
-		options: [
-			{
-				names: ['--force'],
-				shortNames: ['-f'],
-				description: 'Force do something.'
-			}
-		],
+        args: {
+            required: ['reqarg1'],
+            optional: ['optarg1']
+        },
+        options: [
+            {
+                names: ['--force'],
+                shortNames: ['-f'],
+                description: 'Force do something.'
+            }
+        ],
         execute(props): void {
             console.log('test')
-			console.log(props)
+            console.log(props)
         }
     }
 ]
 
 
 const main = async (): Promise<void> => {
+    console.log(123)
+
     const optionsParser = new CommandOptionsParser(options)
     optionsParser.parse(args)
 }
 
 main()
-

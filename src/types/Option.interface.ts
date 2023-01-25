@@ -1,4 +1,3 @@
-import { If } from './misc/If.type'
 import { Letters } from './misc/Letters.type'
 
 export type OptionName = `--${string}` | `--${string} ${string}`
@@ -34,7 +33,7 @@ export interface IOption<T extends string | number = string> {
 	/**
 	 * Options that may be applied to the option.
 	 */
-	options?: Exclude<IOption<T>, 'options' | 'execute'>[]
+	options?: Omit<IOption<T>, 'options' | 'execute'>[]
 
 	/**
 	 * Executes the option.
@@ -50,5 +49,5 @@ export interface IArguments {
 
 export interface IOptionProps<T extends string | number = string> {
 	argument?: string
-	options: Exclude<IOption, 'options' | 'execute'>[] 
-
+	options: Omit<IOption<T>, 'options' | 'execute'>[]
+}
