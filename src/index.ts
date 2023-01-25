@@ -1,5 +1,8 @@
-import { IOption } from './types/Option'
+import { IOption, OptionName, ShortOptionName } from './types/Option.interface'
 import { CommandOptionsParser } from './utils/CommandOptionsParser.util'
+
+const processArgv = process.argv.slice(2)
+const args = processArgv as OptionName[] | ShortOptionName[]
 
 const options: IOption[] = [
     {
@@ -33,17 +36,29 @@ const options: IOption[] = [
         names: ['--test'],
         shortNames: ['-t'],
         description: 'Test command',
-
-        execute(): void {
+		args: {
+			required: ['reqarg1'],
+			optional: ['optarg1']
+		},
+		options: [
+			{
+				names: ['--force'],
+				shortNames: ['-f'],
+				description: 'Force do something.'
+			}
+		],
+        execute(props): void {
             console.log('test')
+			console.log(props)
         }
     }
 ]
 
 
-export const main = async (): Promise<void> => {
+const main = async (): Promise<void> => {
     const optionsParser = new CommandOptionsParser(options)
-    optionsParser.parse()
+    optionsParser.parse(args)
 }
 
-// throw new Error('The package is not ready yet. Come back later when it\'s ready!')
+main()
+
