@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./dist/src/index.js",
   "scripts": {
-    "dev": "ts-node ./src/index.ts",
+    "test": "ts-node ./test/cli.ts",
     "build": "tsc",
     "prepare": "npx husky install",
     "lint": "eslint ./src",
