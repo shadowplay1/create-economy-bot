@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node ./src/index.ts",
     "build": "tsc",
+    "prepare": "npx husky install",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "templates:lint": "eslint ./templates --config ./.eslintrc.js",
