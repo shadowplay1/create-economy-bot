@@ -1,4 +1,5 @@
 import { executeCommand } from './executeCommand.function'
+import { CLITestError } from './CLITestError'
 
 import { ICLITest } from '../types/CLITest.interface'
 import { ITestFactory } from '../types/TestFactory.interface'
@@ -28,16 +29,27 @@ export class ResultExpecter {
      * @param description Test description.
      * @returns {ITestFactory} Testing factory object.
      */
-    public expect(commandToTest: string, _description: string): ITestFactory {
+    public expect(commandToTest: string, description: string): ITestFactory {
         const cmd = `${this.initialCommand} ${commandToTest}`
-        
-        // todo: command output handling
-        executeCommand(cmd)
+
+        const executionResult = executeCommand(cmd)
+		const stdout = executionResult?.stdout
+
+		if (!executionResult.status) {
+			throw new CLITestError(`Command "${cmd}" failed: ${err?.name || 'Error'}: ${err?.message}`)
+		}
 
         // todo: testing functions
         return {
             toSucceed(): any {
-                return commandToTest
+                console.log(stdout)
+
+				this.tests.push({
+					passed: true,
+					expectedType: 'success',
+					stdout,
+					description
+				})
             },
 
             toError(): any {
@@ -55,6 +67,9 @@ export class ResultExpecter {
      * @returns {void}
      */
     public finish(): void {
-        console.log('tests finished')
+        console.log('tests finished\n\n')
+
+		console.log(tests.map(x => `${description} - ${x.passed ? 'passed' : 'failed'}`).join(', '))
     }
 }
+
