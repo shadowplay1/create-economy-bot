@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { execSync } from 'child_process'
 import { IExecutionResult } from '../types/ExecutionResult.interface'
 
 /**
@@ -6,19 +6,19 @@ import { IExecutionResult } from '../types/ExecutionResult.interface'
  * @param command The command to execute.
  * @returns Command execution result object
  */
-export const executeCommand = (command: string): Promise<IExecutionResult> => new Promise(resolve => {
-    exec(command, (err, stdout, stderr) => {
-        if (err || stderr) {
-            resolve({
-                status: false,
-                err,
-                stderr
-            })
-        }
+export const executeCommand = (command: string): IExecutionResult => {
+    try {
+		const stdout = execSync(command)
 
-        return {
-            status: true,
-            stdout
-        }
-    })
-})
+		return {
+			status: true,
+			stdout
+		}
+	} catch (err) {
+		return {
+			status: false,
+			err
+		}
+    }
+}
+
