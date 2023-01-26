@@ -4,6 +4,6 @@ module.exports = {
     economyVersion: 'v1.7.4',
     databaseType: 'json',
     language: 'typescript',
-    description: 'JSON bot template.' 
+    description: 'JSON bot template.'
 }
 
