@@ -12,8 +12,8 @@
 		"husky": "^8.0.3"
 	},
 	"scripts": {
-		"templates:lint": "eslint ./src --config ./.eslintrc.js",
-		"templates:lint:fix": "eslint ./src --fix --config ./.eslintrc.js",
+		"templates:lint": "eslint ./templates --config ./.eslintrc.js",
+		"templates:lint:fix": "eslint ./templates --fix --config ./.eslintrc.js",
 		"prepare": "husky install"
 	},
 	"repository": {
