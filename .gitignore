@@ -1,7 +1,12 @@
 node_modules/
 
+lib/
+src/
+test/
+
 # vim swap files
 *.sw[nop]
 
 package-lock.json
 /.env
+

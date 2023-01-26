@@ -1,4 +1,15 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run templates:lint:fix
+
+is_node_ok() {
+	node -v > /dev/null 2>&1
+}
+
+
+if is_node_ok; then
+	npm run templates:lint:fix
+else
+	echo -e "Failed to detect Node.js installation - aborting...\n"
+fi
+
