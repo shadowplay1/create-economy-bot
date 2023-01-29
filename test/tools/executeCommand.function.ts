@@ -12,12 +12,13 @@ export const executeCommand = (command: string): IExecutionResult => {
 
 		return {
 			status: true,
-			stdout
+			stdout: stdout.toString()
 		}
 	} catch (err) {
 		return {
 			status: false,
-			err
+			err,
+			stderr: err.stderr.toString()
 		}
     }
 }

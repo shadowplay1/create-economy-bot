@@ -56,8 +56,6 @@ const options: IOption[] = [
 
 
 const main = async (): Promise<void> => {
-    console.log(123)
-
     const optionsParser = new CommandOptionsParser(options)
     optionsParser.parse(args)
 }

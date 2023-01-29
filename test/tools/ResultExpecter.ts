@@ -36,20 +36,23 @@ export class ResultExpecter {
 		const stdout = executionResult?.stdout
 
 		if (!executionResult.status) {
-			throw new CLITestError(`Command "${cmd}" failed: ${err?.name || 'Error'}: ${err?.message}`)
+			throw new CLITestError(
+				`Command "${cmd}" failed:\n` + 
+					executionResult?.stderr || `${executionResult.err?.name || 'Error'}: ` + 
+					`${executionResult.err?.message.replace(`Command failed: ${cmd}`)}`
+			)
 		}
 
         // todo: testing functions
         return {
             toSucceed(): any {
-                console.log(stdout)
-
 				this.tests.push({
 					passed: true,
 					expectedType: 'success',
 					stdout,
 					description
 				})
+				console.log(1)
             },
 
             toError(): any {
@@ -69,7 +72,7 @@ export class ResultExpecter {
     public finish(): void {
         console.log('tests finished\n\n')
 
-		console.log(tests.map(x => `${description} - ${x.passed ? 'passed' : 'failed'}`).join(', '))
+		console.log(this.tests.map(x => `${description} - ${x.passed ? 'passed' : 'failed'}`).join(', '))
     }
 }
 
