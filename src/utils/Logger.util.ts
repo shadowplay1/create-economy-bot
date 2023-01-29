@@ -7,7 +7,7 @@ export class Logger {
      * @param message The message to send.
      */
     public success(message: string): void {
-        return console.log(`${colors.lightblue}[I] ${message}${colors.reset}`)
+        return console.log(`${colors.lightgreen}[OK] ${message}${colors.reset}`)
     }
 
     /**

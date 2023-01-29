@@ -18,7 +18,7 @@ export class ResultExpecter {
      */
     public initialCommand: ICLITesterOptions
 
-    constructor(options = {} as any) {
+    public constructor(options = {} as any) {
         this.tests = []
         this.initialCommand = options.initialCommand
     }
@@ -33,35 +33,38 @@ export class ResultExpecter {
         const cmd = `${this.initialCommand} ${commandToTest}`
 
         const executionResult = executeCommand(cmd)
-		const stdout = executionResult?.stdout
+        const stdout = executionResult?.stdout
 
-		if (!executionResult.status) {
-			throw new CLITestError(
-				`Command "${cmd}" failed:\n` + 
-					executionResult?.stderr || `${executionResult.err?.name || 'Error'}: ` + 
-					`${executionResult.err?.message.replace(`Command failed: ${cmd}`)}`
-			)
-		}
+        if (!executionResult.status) {
+            throw new CLITestError(
+                `Command "${cmd}" failed:\n` +
+                executionResult?.stderr || `${executionResult.err?.name || 'Error'}: ` +
+                `${executionResult.err?.message.replace(`Command failed: ${cmd}`, '')}`
+            )
+        }
+
+        const toSucceed = () => {
+            this.tests.push({
+                passed: true,
+                expectedType: 'success',
+                stdout: stdout as string,
+                description
+            })
+        }
+
+        const toError = () => {
+            return commandToTest
+        }
+
+        const toSendInfo = () => {
+            return commandToTest
+        }
 
         // todo: testing functions
         return {
-            toSucceed(): any {
-				this.tests.push({
-					passed: true,
-					expectedType: 'success',
-					stdout,
-					description
-				})
-				console.log(1)
-            },
-
-            toError(): any {
-                return commandToTest
-            },
-
-            toSendInfo(): any {
-                return commandToTest
-            }
+            toSucceed,
+            toError,
+            toSendInfo
         }
     }
 
@@ -70,9 +73,10 @@ export class ResultExpecter {
      * @returns {void}
      */
     public finish(): void {
-        console.log('tests finished\n\n')
+        console.log('tests finished')
+        console.log(`${this.tests.filter(test => test.passed).length}/${this.tests.length} tests passed\n`)
 
-		console.log(this.tests.map(x => `${description} - ${x.passed ? 'passed' : 'failed'}`).join(', '))
+        console.log(this.tests.map(test => `${test.description} - ${test.passed ? 'passed' : 'failed'}`).join('\n'))
     }
 }
 

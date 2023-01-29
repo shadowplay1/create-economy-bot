@@ -12,7 +12,7 @@ export const executeCommand = (command: string): IExecutionResult => {
 
 		return {
 			status: true,
-			stdout: stdout.toString()
+			stdout: stdout.toString(),
 		}
 	} catch (err) {
 		return {
@@ -22,4 +22,3 @@ export const executeCommand = (command: string): IExecutionResult => {
 		}
     }
 }
-

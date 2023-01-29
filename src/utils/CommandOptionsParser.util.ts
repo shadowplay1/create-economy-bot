@@ -13,18 +13,18 @@ export class CommandOptionsParser {
     }
 
     public parse(args: string[]): void {
-		l(1)
+        l(1)
 
-        let options: IOption[] = [...this.commandOptions]
+        const options: IOption[] = [...this.commandOptions]
         const commandArgument = args.length ? args.shift() : ''
 
         let optionsArg: string
 
-		l(2)
-		l({args})
+        l(2)
+        l({ args })
 
         while (args.length) {
-			l(3)
+            l(3)
 
             optionsArg = args.shift() as string
 
@@ -32,7 +32,7 @@ export class CommandOptionsParser {
                 return opt.names.includes(optionsArg as any) || opt.shortNames.includes(optionsArg as any)
             })
 
-			/*
+            /*
             if (!option) {
                 return this.logger.error(`Invalid option: ${optionsArg}`)
             }*/
@@ -41,18 +41,18 @@ export class CommandOptionsParser {
                 return this.logger.error(`Invalid option: ${optionsArg}`)
             }
 
-			if (option.args && option.args.required && !args.length) {
+            if (option.args && option.args.required && !args.length) {
                 return this.logger.error(`Missing required argument for option: ${optionsArg}`)
             }
 
 
-			l(4)
+            l(4)
 
             // options = (option.options as IOption<string>[]) || []
 
             if (option.args) {
 
-				l(5)
+                l(5)
 
                 const requiredArgs: string[] = []
 
@@ -66,11 +66,11 @@ export class CommandOptionsParser {
                     requiredArgs.push(arg)
                 })
 
-				l(6)
+                l(6)
 
                 // option.value = args.shift()
 
-				l(7)
+                l(7)
 
                 option?.execute({
                     argument: commandArgument,
@@ -81,15 +81,15 @@ export class CommandOptionsParser {
                     ) as any : []
                 })
 
-				option.value = args.shift()
+                option.value = args.shift()
 
-				l(8)
+                l(8)
             } else {
-				l(11)
+                l(11)
 
                 // option.value = args.shift()
 
-				l(22)
+                l(22)
 
                 option?.execute({
                     argument: commandArgument,
@@ -100,9 +100,9 @@ export class CommandOptionsParser {
                     ) as any : []
                 })
 
-				option.value = args.shift()
+                option.value = args.shift()
 
-				l(33)
+                l(33)
             }
         }
     }
