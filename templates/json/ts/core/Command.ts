@@ -1,4 +1,4 @@
-import CommandOptions from '../types/ICommandOptions'
+import CommandOptions from '../types/CommandOptions.interface'
 import DiscordClient from './DiscordClient'
 
 export default abstract class Command {
