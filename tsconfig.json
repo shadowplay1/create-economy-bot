@@ -3,8 +3,9 @@
 		"strict": true,
 		"alwaysStrict": true,
 		"lib": [
-            "es2021",
+			"es5",
 			"es6",
+            "es2021",
 			"dom", 
 			"dom.iterable"
         ],
@@ -24,12 +25,7 @@
 		"strictNullChecks": true,
 		"skipLibCheck": false,
 		"skipDefaultLibCheck": false,
-		"resolveJsonModule": true,
-		"paths": {
-			"create-economy-bot": [
-				"./types/index.d.ts"
-			]
-		}
+		"resolveJsonModule": true
 	},
 	"ts-node": {
 		"transpileOnly": true

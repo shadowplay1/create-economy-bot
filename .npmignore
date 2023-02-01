@@ -1,5 +1,6 @@
 .git/
 
+# source files
 src/
 templates/
 
