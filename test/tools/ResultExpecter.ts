@@ -1,13 +1,11 @@
-import { colors } from '../../src/structures/colors.structure'
+import { consoleColors as colors } from '../../src/structures/colors.structure'
 
 import { executeCommand } from './executeCommand.function'
 import { CLITestError } from './CLITestError'
 
-import { ICLITesterOptions } from '../types/CLITesterOptions.interface'
-
-import { 
-	ICLITest, ICLITesterOptions,
-	ITestFactory, CLILogType
+import {
+    ICLITest, ICLITesterOptions,
+    ITestFactory, CLILogType
 } from '../types/CLITest.interface'
 
 import { getLogType, isLogTypeIncluded } from '../utils/cli.util'
@@ -50,30 +48,30 @@ export class ResultExpecter {
         }
 
         const testFor = (expectedType: CLILogType) => {
-			const receivedType = getLogType(stdout)
+            const receivedType = getLogType(stdout as string)
 
-			const testObject = {
+            const testObject = {
                 passed: expectedType == receivedType,
                 expectedType,
-				receivedType,
+                receivedType,
                 stdout: stdout as string,
                 description
             }
 
-			this.tests.push(testObject)
+            this.tests.push(testObject)
         }
 
-		const toSucceed = () => {
-			testFor(CLILogType.SUCCESS)
-		}
+        const toSucceed = () => {
+            testFor(CLILogType.SUCCESS)
+        }
 
         const toError = () => {
             testFor(CLILogType.ERROR)
         }
 
-		const toIncludeWarning = () => {
-			return
-		}
+        const toIncludeWarning = () => {
+            return
+        }
 
         const toIncludeInfo = () => {
             return
@@ -83,7 +81,7 @@ export class ResultExpecter {
         return {
             toSucceed,
             toError,
-			toIncludeWarning,
+            toIncludeWarning,
             toIncludeInfo
         }
     }
@@ -96,7 +94,13 @@ export class ResultExpecter {
         console.log('tests finished')
         console.log(`${this.tests.filter(test => test.passed).length}/${this.tests.length} tests passed\n`)
 
-        console.log(this.tests.map(test => `${test.description} - ${test.passed ? `expected "${test.expectedType}" - passed` : `expected "${test.expectedType}", but received "${test.receivedType}" - failed`}`).join('\n'))
+        console.log(
+            this.tests
+                .map(
+                    test => `${test.description} - ${test.passed ? `expected "${test.expectedType}" - passed` : `expected "${test.expectedType}", but received "${test.receivedType}" - failed`}`
+                )
+                .join('\n')
+        )
     }
 }
 
