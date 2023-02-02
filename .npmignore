@@ -1,8 +1,15 @@
+# node modules
+node_modules/
+
+# git files
 .git/
 
-# source files
-src/
-templates/
+# tests log files
+logs/*.log
+
+# source files and bot template files
+src/*
+templates/*
 
 # vim swap files
 *.sw[nop]
