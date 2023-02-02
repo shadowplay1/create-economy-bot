@@ -1,5 +1,5 @@
 import { writeFileSync } from 'fs'
-import { CLITestError } from './tools/CLITestError'
+import { CLITestError } from '../tools/CLITestError'
 
 export class LogWriter {
 	private _logFileTextInputs: string[]

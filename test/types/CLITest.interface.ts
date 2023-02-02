@@ -1,6 +1,11 @@
 export interface ICLITest {
 
     /**
+     * The command that was executed to run the current test.
+     */
+    command: string
+
+    /**
      * Whether the test passed.
      */
     passed: boolean
@@ -34,11 +39,16 @@ export interface ICLITesterOptions {
     initialCommand: string
 }
 
+export interface IResultIncludingTestsFactory {
+    toIncludeWarning(): IResultIncludingTestsFactory
+    toIncludeInfo(): IResultIncludingTestsFactory
+}
+
 export interface ITestFactory {
-    toSucceed(): void
-    toError(): void
-	toIncludeWarning(): void
-    toIncludeInfo(): void
+    toSucceed(): IResultIncludingTestsFactory
+    toError(): IResultIncludingTestsFactory
+	toIncludeWarning(): IResultIncludingTestsFactory
+    toIncludeInfo(): IResultIncludingTestsFactory
 }
 
 export enum CLILogType {

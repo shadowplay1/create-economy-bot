@@ -1,15 +1,14 @@
 import { CLILogType } from '../types/CLITest.interface'
 import { keys, entries } from './misc/TypedObject.util'
 
+import { colorStringLength } from '../../src/structures/colors.structure'
+
 export const logPrefixTypes = {
 	'[OK]': CLILogType.SUCCESS,
 	'[I]': CLILogType.INFO,
 	'[!]': CLILogType.WARN,
 	'[E]': CLILogType.ERROR
 }
-
-export const colorCodeLength = '\x1b[30m'.length
-
 
 /**
  * Gets the type of the finished command output.
@@ -28,7 +27,7 @@ export const getLogType = (stdout: string): CLILogType => {
 		.split('\n')
 		.filter(line => line)
 		.at(-1)
-		?.slice(colorCodeLength) as string
+		?.slice(colorStringLength) as string
 
     const logPrefix = lastLogLine.split(' ')[0] as keyof typeof logPrefixTypes
     return logPrefixTypes[logPrefix] || CLILogType.NONE

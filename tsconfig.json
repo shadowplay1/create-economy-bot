@@ -3,11 +3,12 @@
 		"strict": true,
 		"alwaysStrict": true,
 		"lib": [
-			"es5",
-			"es6",
-            "es2021",
-			"dom", 
-			"dom.iterable"
+			"ES5",
+			"ES6",
+            "ES2021",
+            "ES2021.String",
+			"DOM", 
+			"DOM.Iterable"
         ],
 		"module": "commonjs",
 		"moduleResolution": "node",

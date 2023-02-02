@@ -1,20 +1,24 @@
+export const colorCodePrefix = '\x1b['
+export const colorCodeLength: 2 | 3 = 3
+export const colorStringLength = colorCodePrefix.length + colorCodeLength
+
 export const consoleColors = {
-    black: '\x1b[30m',
-    red: '\x1b[31m',
-    green: '\x1b[32m',
-    yellow: '\x1b[33m',
-    blue: '\x1b[34m',
-    magenta: '\x1b[35m',
-    cyan: '\x1b[36m',
-    lightgray: '\x1b[37m',
-    default: '\x1b[39m',
-    darkgray: '\x1b[90m',
-    lightred: '\x1b[91m',
-    lightgreen: '\x1b[92m',
-    lightyellow: '\x1b[93m',
-    lightblue: '\x1b[94m',
-    lightmagenta: '\x1b[95m',
-    lightcyan: '\x1b[96m',
-    white: '\x1b[97m',
-    reset: '\x1b[0m'
+    black: colorCodePrefix + '30m',
+    red: colorCodePrefix + '31m',
+    green: colorCodePrefix + '32m',
+    yellow: colorCodePrefix + '33m',
+    blue: colorCodePrefix + '34m',
+    magenta: colorCodePrefix + '35m',
+    cyan: colorCodePrefix + '36m',
+    lightgray: colorCodePrefix + '37m',
+    default: colorCodePrefix + '39m',
+    darkgray: colorCodePrefix + '90m',
+    lightred: colorCodePrefix + '91m',
+    lightgreen: colorCodePrefix + '92m',
+    lightyellow: colorCodePrefix + '93m',
+    lightblue: colorCodePrefix + '94m',
+    lightmagenta: colorCodePrefix + '95m',
+    lightcyan: colorCodePrefix + '96m',
+    white: colorCodePrefix + '97m',
+    reset: colorCodePrefix + '0m'
 }
