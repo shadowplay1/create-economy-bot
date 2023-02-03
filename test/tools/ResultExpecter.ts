@@ -31,9 +31,17 @@ export class ResultExpecter {
      */
     private _tests: ICLITest[] = []
 
+    /**
+	 * Log writer utility class instance.
+	 */
     private _logWriter = new LogWriter({
         separator: '\n\n'
     })
+
+    /**
+	 * Testing start date.
+	 */
+    private _startDate = new Date()
 
     /**
      * CLI tester options object.
@@ -41,7 +49,6 @@ export class ResultExpecter {
     public initialCommand: ICLITesterOptions
 
     public constructor(options = {} as any) {
-        this._tests = []
         this.initialCommand = options.initialCommand
     }
 
@@ -65,7 +72,7 @@ export class ResultExpecter {
             )
         }
 
-        const testFor = (expectedType: CLILogType) => {
+        const testFor = (expectedType: CLILogType): void => {
             const receivedType = getLogType(stdout as string)
 
             const testObject: ICLITest = {
@@ -80,7 +87,7 @@ export class ResultExpecter {
             this._tests.push(testObject)
         }
 
-        const testIncludingFor = (expectedType: CLILogType) => {
+        const testIncludingFor = (expectedType: CLILogType): void => {
             const isLogIncluded = isLogTypeIncluded(expectedType, stdout as string)
 
             const testObject: ICLITest = {
@@ -96,22 +103,24 @@ export class ResultExpecter {
         }
 
         const resultIncludingTests = {
-            toIncludeWarning() {
+            toIncludeWarning(): IResultIncludingTestsFactory {
                 testIncludingFor(CLILogType.WARN)
                 return resultIncludingTests
             },
-            toIncludeInfo () {
+
+            toIncludeInfo(): IResultIncludingTestsFactory {
                 testIncludingFor(CLILogType.INFO)
                 return resultIncludingTests
             }
         }
 
         const resultingTests = {
-            toSucceed() {
+            toSucceed(): IResultIncludingTestsFactory {
                 testFor(CLILogType.SUCCESS)
                 return resultIncludingTests
             },
-            toError () {
+
+            toError(): IResultIncludingTestsFactory {
                 testFor(CLILogType.ERROR)
                 return resultIncludingTests
             }
@@ -129,31 +138,36 @@ export class ResultExpecter {
      */
     public finish(): void {
         const finishDate = new Date()
-        const tests = this._tests.length
+        const timeTaken = finishDate.getTime() - this._startDate.getTime()
+
+        const totalTests = this._tests.length
 
         const [
             month, day, year,
             hours, minutes, seconds
         ] = [
-                finishDate.getMonth(), finishDate.getDay(), finishDate.getFullYear(),
-                finishDate.getHours(), finishDate.getMinutes(), finishDate.getSeconds(),
-            ]
+            finishDate.getMonth(), finishDate.getDay(), finishDate.getFullYear(),
+            finishDate.getHours(), finishDate.getMinutes(), finishDate.getSeconds(),
+        ]
 
         const logFilePath = `./logs/cli-test-${month}-${day}-${year}_${hours}-${minutes}-${seconds}.log`
 
         const passedTests = this._tests.filter(test => test.passed).length
-        const failedTests = tests - passedTests
+        const failedTests = totalTests - passedTests
 
         const logFileInputs = [
             `${cliPackageName}@${cliPackageVersion} - CLI Test - ${new Date().toLocaleString('en')}`,
-            `Successfully ran ${tests} tests:\n${passedTests}/${tests} tests passed (${failedTests} tests failed)`,
+            `Successfully ran ${totalTests} tests:\n${passedTests}/${totalTests} tests passed (${failedTests} tests failed)`,
 
             `Tests List:\n${this._tests.map(
                 (test, testIndex) => `${testIndex + 1}. ${test.description} - expecting for ${test.expectedType}`
             ).join('\n')}\n`,
 
-            `Test Results:\n\n` +
+            'Test Results:\n\n' +
+
             this._tests.map((test, testIndex) => {
+
+                // removing color codes from each line if they are in
                 const filteredCommandOutput = test.stdout
                     .split('\n')
                     .map(line =>
@@ -163,28 +177,40 @@ export class ResultExpecter {
                     )
                     .join('\n')
 
-                const testResultLine = `>>> Test #${testIndex + 1} - ${test.description} (${test.command}): ` +
-                    `${test.passed ? 'passed' : 'failed'}.\nExpected result is ${test.expectedType} and ` +
-                    `received result is ${test.receivedType}.\nThe output was:\n` +
-                    `${filteredCommandOutput}`
+                const testResultLine =
+					`>>> Test #${testIndex + 1} - "${test.description}" (${test.command}): ` +
+                    `${test.passed ? 'passed' : 'failed'}.\nExpected result is "${test.expectedType}", ` +
+                    `received result is "${test.receivedType}".\nThe output was:\n${filteredCommandOutput}`
 
                 return testResultLine
             }).join('\n\n\n')
         ]
 
-        // todo: colored logs
-        console.log(`${colors.lightcyan}Testing Finished${colors.reset}`)
-        console.log(
-            `${passedTests}/${tests} tests passed\n`
-        )
+        const passedTestsMessage = passedTests == totalTests ?
+            colors.lightgreen + 'All tests passed!' + colors.reset :
+            colors.lightred + `${passedTests}/${totalTests} tests passed` + colors.reset
+
+        for (const rawTestIndex in this._tests) {
+            const testIndex = parseInt(rawTestIndex)
+
+            const test = this._tests[testIndex]
+            const logColor = test.passed ? colors.lightgreen : colors.lightred
+
+            console.log(
+                logColor
+					+ `Test ${testIndex + 1}/${totalTests} - ${test.description} - ${test.passed ? 'passed ✅' : 'failed ❌'}`
+					+ colors.reset
+            )
+        }
+
+        console.log()
 
         console.log(
-            this._tests
-                .map(
-                    test => `${test.description} - ${test.passed ? `expected "${test.expectedType}" - passed` : `expected "${test.expectedType}", but received "${test.receivedType}" - failed`}`
-                )
-                .join('\n')
+            colors.lightcyan + 'Testing finished ' + colors.lightyellow +
+				`in ${timeTaken}ms / ${timeTaken / 1000}s` + colors.reset
         )
+
+        console.log(passedTestsMessage)
 
         for (const logFileInput of logFileInputs) {
             this._logWriter.addInput(logFileInput)
@@ -200,11 +226,20 @@ export class ResultExpecter {
 
             this._logWriter.write(logFilePath)
 
-            console.log('\nThe full log of the run can be found in:')
-            console.log(`${currentDirectory}/${cleanLogFilePath}\n`)
+            console.log()
+            console.log(colors.lightmagenta + 'The full log of this run can be found in:')
+
+            console.log(
+                colors.magenta + `${currentDirectory}/${cleanLogFilePath}` + colors.reset
+            )
         } catch (err: any) {
             const error: Error = err
-            console.error(`Failed to write the log file of this run: ${error.name || 'Error'}: ${error.message}`)
+
+            console.error(
+                colors.lightred +
+					`Failed to write the log file of this run: ${error.name || 'Error'}: ${error.message}` +
+				colors.reset
+            )
         }
     }
 }

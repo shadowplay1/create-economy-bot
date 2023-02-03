@@ -4,10 +4,10 @@ import { keys, entries } from './misc/TypedObject.util'
 import { colorStringLength } from '../../src/structures/colors.structure'
 
 export const logPrefixTypes = {
-	'[OK]': CLILogType.SUCCESS,
-	'[I]': CLILogType.INFO,
-	'[!]': CLILogType.WARN,
-	'[E]': CLILogType.ERROR
+    '[OK]': CLILogType.SUCCESS,
+    '[I]': CLILogType.INFO,
+    '[!]': CLILogType.WARN,
+    '[E]': CLILogType.ERROR
 }
 
 /**
@@ -17,17 +17,17 @@ export const logPrefixTypes = {
  */
 export const getLogType = (stdout: string): CLILogType => {
 
-	// command outputs from this cli are always having a color
-	// we are removing the color code with `.slice(...)`
-	// so we could check the log prefixes, like [OK], [I], [E] and [!]
-	//
-	// also trimming the lines array with `.filter(...)`
-	// to eliminate the blank lines in the output string
+    // command outputs from this cli are always having a color
+    // we are removing the color code with `.slice(...)`
+    // so we could check the log prefixes, like [OK], [I], [E] and [!]
+    //
+    // also trimming the lines array with `.filter(...)`
+    // to eliminate the blank lines in the output string
     const lastLogLine = stdout
-		.split('\n')
-		.filter(line => line)
-		.at(-1)
-		?.slice(colorStringLength) as string
+        .split('\n')
+        .filter(line => line)
+        .at(-1)
+        ?.slice(colorStringLength) as string
 
     const logPrefix = lastLogLine.split(' ')[0] as keyof typeof logPrefixTypes
     return logPrefixTypes[logPrefix] || CLILogType.NONE
@@ -57,7 +57,7 @@ export const isLogTypeIncluded = (logType: CLILogType, stdout: string): boolean 
  * @returns Whether there's no prefixes in the output.
  */
 export const isDefaultLogged = (stdout: string): boolean => {
-	const prefixes = keys(logPrefixTypes)
+    const prefixes = keys(logPrefixTypes)
 
     for (const prefix of prefixes) {
         if (stdout.includes(prefix)) {

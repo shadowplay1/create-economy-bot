@@ -8,20 +8,20 @@ import { IExecutionResult } from '../types/ExecutionResult.interface'
  */
 export const executeCommand = (command: string): IExecutionResult => {
     try {
-		const stdout = execSync(command)
+        const stdout = execSync(command)
 
-		return {
-			status: true,
-			stdout: stdout.toString(),
-			err: null,
-			stderr: null
-		}
-	} catch (err) {
-		return {
-			status: false,
-			stdout: null,
-			err,
-			stderr: err.stderr.toString()
-		}
+        return {
+            status: true,
+            stdout: stdout.toString(),
+            err: null,
+            stderr: null
+        }
+    } catch (err) {
+        return {
+            status: false,
+            stdout: null,
+            err,
+            stderr: err.stderr.toString()
+        }
     }
 }
