@@ -17,7 +17,10 @@ import { LogWriter } from './LogWriter'
 
 import {
     ICLITest, ICLITesterOptions,
-    ITestFactory, CLILogType
+    ITestFactory, CLILogType,
+    IResultIncludingTestsFactory,
+    TestIncludingTypes,
+    TypeInclusionStatus
 } from '../types/CLITest.interface'
 
 import {
@@ -32,15 +35,15 @@ export class ResultExpecter {
     private _tests: ICLITest[] = []
 
     /**
-	 * Log writer utility class instance.
-	 */
+     * Log writer utility class instance.
+     */
     private _logWriter = new LogWriter({
         separator: '\n\n'
     })
 
     /**
-	 * Testing start date.
-	 */
+     * Testing start date.
+     */
     private _startDate = new Date()
 
     /**
@@ -59,6 +62,16 @@ export class ResultExpecter {
      * @returns {ITestFactory} Testing factory object.
      */
     public expect(commandToTest: string, description: string): ITestFactory {
+        const expectedIncludingTypes: TestIncludingTypes = {
+            warn: TypeInclusionStatus.ANY,
+            info: TypeInclusionStatus.ANY
+        }
+
+        const receivedIncludingTypes: TestIncludingTypes = {
+            warn: TypeInclusionStatus.ANY,
+            info: TypeInclusionStatus.ANY
+        }
+
         const cmd = `${this.initialCommand} ${commandToTest}`
 
         const executionResult = executeCommand(cmd)
@@ -73,28 +86,24 @@ export class ResultExpecter {
         }
 
         const testFor = (expectedType: CLILogType): void => {
-            const receivedType = getLogType(stdout as string)
+            const expectedLogsIncluded =
+                expectedIncludingTypes.warn == receivedIncludingTypes.warn &&
+                expectedIncludingTypes.info == receivedIncludingTypes.info
+
+            const isExpectedTypeIncluded =
+                expectedType == CLILogType.WARN && receivedIncludingTypes.warn == TypeInclusionStatus.INCLUDED ||
+                expectedType == CLILogType.INFO && receivedIncludingTypes.info == TypeInclusionStatus.INCLUDED
+
+            const receivedType = isExpectedTypeIncluded ? expectedType : getLogType(stdout as string)
+            const isTestPassed = expectedType == receivedType && expectedLogsIncluded
 
             const testObject: ICLITest = {
                 command: cmd,
-                passed: expectedType == receivedType,
+                passed: isTestPassed,
                 expectedType,
                 receivedType,
-                stdout: stdout as string,
-                description
-            }
-
-            this._tests.push(testObject)
-        }
-
-        const testIncludingFor = (expectedType: CLILogType): void => {
-            const isLogIncluded = isLogTypeIncluded(expectedType, stdout as string)
-
-            const testObject: ICLITest = {
-                command: cmd,
-                passed: isLogIncluded,
-                expectedType,
-                receivedType: isLogIncluded ? expectedType : CLILogType.NONE,
+                expectedIncludingTypes,
+                receivedIncludingTypes,
                 stdout: stdout as string,
                 description
             }
@@ -104,12 +113,22 @@ export class ResultExpecter {
 
         const resultIncludingTests = {
             toIncludeWarning(): IResultIncludingTestsFactory {
-                testIncludingFor(CLILogType.WARN)
+                const isLogIncluded = isLogTypeIncluded(CLILogType.WARN, stdout as string)
+
+                expectedIncludingTypes.warn = TypeInclusionStatus.INCLUDED
+                receivedIncludingTypes.warn = isLogIncluded
+
+                testFor(CLILogType.WARN)
                 return resultIncludingTests
             },
 
             toIncludeInfo(): IResultIncludingTestsFactory {
-                testIncludingFor(CLILogType.INFO)
+                const isLogIncluded = isLogTypeIncluded(CLILogType.INFO, stdout as string)
+
+                expectedIncludingTypes.info = TypeInclusionStatus.INCLUDED
+                receivedIncludingTypes.info = isLogIncluded
+
+                testFor(CLILogType.INFO)
                 return resultIncludingTests
             }
         }
@@ -155,11 +174,11 @@ export class ResultExpecter {
         const passedTests = this._tests.filter(test => test.passed).length
         const failedTests = totalTests - passedTests
 
-		console.log(
-			colors.lightblue
-				+ `🚀 ${cliPackageName}@${cliPackageVersion} - CLI Test - ${finishDate.toLocaleString('en')} 🚀\n`
-				+ colors.reset
-		)
+        console.log(
+            colors.lightblue
+            + `🚀 ${cliPackageName}@${cliPackageVersion} - CLI Test - ${finishDate.toLocaleString('en')} 🚀\n`
+            + colors.reset
+        )
 
         const logFileInputs = [
             `${cliPackageName}@${cliPackageVersion} - CLI Test - ${finishDate.toLocaleString('en')}`,
@@ -172,6 +191,29 @@ export class ResultExpecter {
             'Test Results:\n\n' +
 
             this._tests.map((test, testIndex) => {
+                const [isWarnExpected, isInfoExpected] = [
+                    test.expectedIncludingTypes.warn == TypeInclusionStatus.INCLUDED,
+                    test.expectedIncludingTypes.info == TypeInclusionStatus.INCLUDED
+                ]
+
+                const [isWarnReceived, isInfoReceived] = [
+                    test.receivedIncludingTypes.warn == TypeInclusionStatus.INCLUDED,
+                    test.receivedIncludingTypes.info == TypeInclusionStatus.INCLUDED
+                ]
+
+                const logExpectingMessage = isWarnExpected && isInfoExpected ?
+                    'warn and info' :
+                    `${isWarnExpected ?
+                        'warn' :
+                        isInfoExpected ? 'info' : 'none'
+                    }`
+
+                const logReceivingMessage = isWarnReceived && isInfoReceived ?
+                    'warn and info' :
+                    `${isWarnReceived ?
+                        'warn' :
+                        isInfoReceived ? 'info' : 'none'
+                    }`
 
                 // removing color codes from each line if they are in
                 const filteredCommandOutput = test.stdout
@@ -184,16 +226,18 @@ export class ResultExpecter {
                     .join('\n')
 
                 const testResultLine =
-					`>>> Test #${testIndex + 1} - "${test.description}" (${test.command}): ` +
+                    `>>> Test #${testIndex + 1} - "${test.description}" (${test.command}): ` +
                     `${test.passed ? 'passed' : 'failed'}.\nExpected result is "${test.expectedType}", ` +
-                    `received result is "${test.receivedType}".\nThe output was:\n${filteredCommandOutput}`
+                    `received result is "${test.receivedType}".\n` +
+                    `Expected for ${logExpectingMessage} in the output, received ${logReceivingMessage} logs.\n` +
+                    `The output was:\n${filteredCommandOutput}`
 
                 return testResultLine
             }).join('\n\n\n')
         ]
 
         const passedTestsMessage = passedTests == totalTests ?
-            colors.lightgreen + '🏁 All tests passed! 🏁' + colors.reset :
+            colors.lightgreen + `🏁 All ${totalTests} tests passed! 🏁` + colors.reset :
             colors.lightred + `🏁 ${passedTests}/${totalTests} tests passed 🏁` + colors.reset
 
         for (const rawTestIndex in this._tests) {
@@ -204,14 +248,14 @@ export class ResultExpecter {
 
             console.log(
                 logColor
-					+ `Test ${testIndex + 1}/${totalTests} - ${test.description} - ${test.passed ? 'passed ✅' : 'failed ❌'}`
-					+ colors.reset
+                + `Test ${testIndex + 1}/${totalTests} - ${test.description} - ${test.passed ? 'passed ✅' : 'failed ❌'}`
+                + colors.reset
             )
         }
 
         console.log(
             colors.lightcyan + '\n⏱️  Testing finished ' + colors.lightyellow +
-				`in ${timeTaken}ms / ${timeTaken / 1000}s ⏱️` + colors.reset
+            `in ${timeTaken}ms / ${timeTaken / 1000}s ⏱️` + colors.reset
         )
 
         console.log(passedTestsMessage)
@@ -239,8 +283,8 @@ export class ResultExpecter {
 
             console.error(
                 colors.lightred +
-					`❌ Failed to write the log file of this run: ${error.name || 'Error'}: ${error.message} ❌` +
-				colors.reset
+                `❌ Failed to write the log file of this run: ${error.name || 'Error'}: ${error.message} ❌` +
+                colors.reset
             )
         }
     }

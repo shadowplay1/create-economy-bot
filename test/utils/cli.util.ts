@@ -1,5 +1,5 @@
-import { CLILogType } from '../types/CLITest.interface'
-import { keys, entries } from './misc/TypedObject.util'
+import { CLILogType, TypeInclusionStatus } from '../types/CLITest.interface'
+import { objectKeys, objectEntries } from './misc/TypedObject.util'
 
 import { colorStringLength } from '../../src/structures/colors.structure'
 
@@ -39,16 +39,16 @@ export const getLogType = (stdout: string): CLILogType => {
  * @param stdout Command output to check.
  * @returns Whether the log is in the output.
  */
-export const isLogTypeIncluded = (logType: CLILogType, stdout: string): boolean => {
-    const prefixTypes = entries(logPrefixTypes)
+export const isLogTypeIncluded = (logType: CLILogType, stdout: string): TypeInclusionStatus => {
+    const prefixTypes = objectEntries(logPrefixTypes)
 
     for (const [prefix, prefixType] of prefixTypes) {
         if (logType == prefixType && stdout.includes(prefix)) {
-            return true
+            return TypeInclusionStatus.INCLUDED
         }
     }
 
-    return false
+    return TypeInclusionStatus.NOT_INCLUDED
 }
 
 /**
@@ -57,7 +57,7 @@ export const isLogTypeIncluded = (logType: CLILogType, stdout: string): boolean 
  * @returns Whether there's no prefixes in the output.
  */
 export const isDefaultLogged = (stdout: string): boolean => {
-    const prefixes = keys(logPrefixTypes)
+    const prefixes = objectKeys(logPrefixTypes)
 
     for (const prefix of prefixes) {
         if (stdout.includes(prefix)) {

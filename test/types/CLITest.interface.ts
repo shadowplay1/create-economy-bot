@@ -20,16 +20,41 @@ export interface ICLITest {
      */
     expectedType: CLILogType
 
-	/**
-	 * Received log type of the output.
-	 */
-	receivedType: CLILogType
+    /**
+     * Received log type of the output.
+     */
+    receivedType: CLILogType
+
+    /**
+     * Expected log types to be included in the output.
+     */
+    expectedIncludingTypes: TestIncludingTypes
+
+    /**
+     * Received log types to be included in the output.
+     */
+    receivedIncludingTypes: TestIncludingTypes
 
     /**
      * Stdout command output.
      */
     stdout: string
 }
+
+export enum TypeInclusionStatus {
+    INCLUDED = 'included',
+    NOT_INCLUDED = 'not included',
+    ANY = 'any'
+}
+
+export type TestTypes = {
+    [key in CLILogType]: TypeInclusionStatus
+}
+
+export type TestIncludingTypes = Pick<
+    TestTypes,
+    CLILogType.WARN | CLILogType.INFO
+>
 
 export interface ICLITesterOptions {
 
@@ -47,7 +72,7 @@ export interface IResultIncludingTestsFactory {
 export interface ITestFactory {
     toSucceed(): IResultIncludingTestsFactory
     toError(): IResultIncludingTestsFactory
-	toIncludeWarning(): IResultIncludingTestsFactory
+    toIncludeWarning(): IResultIncludingTestsFactory
     toIncludeInfo(): IResultIncludingTestsFactory
 }
 
@@ -58,4 +83,3 @@ export enum CLILogType {
     ERROR = 'error',
     NONE = 'none'
 }
-
