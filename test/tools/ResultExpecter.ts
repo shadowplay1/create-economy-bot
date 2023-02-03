@@ -155,8 +155,14 @@ export class ResultExpecter {
         const passedTests = this._tests.filter(test => test.passed).length
         const failedTests = totalTests - passedTests
 
+		console.log(
+			colors.lightblue
+				+ `🚀 ${cliPackageName}@${cliPackageVersion} - CLI Test - ${finishDate.toLocaleString('en')} 🚀\n`
+				+ colors.reset
+		)
+
         const logFileInputs = [
-            `${cliPackageName}@${cliPackageVersion} - CLI Test - ${new Date().toLocaleString('en')}`,
+            `${cliPackageName}@${cliPackageVersion} - CLI Test - ${finishDate.toLocaleString('en')}`,
             `Successfully ran ${totalTests} tests:\n${passedTests}/${totalTests} tests passed (${failedTests} tests failed)`,
 
             `Tests List:\n${this._tests.map(
@@ -187,8 +193,8 @@ export class ResultExpecter {
         ]
 
         const passedTestsMessage = passedTests == totalTests ?
-            colors.lightgreen + 'All tests passed!' + colors.reset :
-            colors.lightred + `${passedTests}/${totalTests} tests passed` + colors.reset
+            colors.lightgreen + '🏁 All tests passed! 🏁' + colors.reset :
+            colors.lightred + `🏁 ${passedTests}/${totalTests} tests passed 🏁` + colors.reset
 
         for (const rawTestIndex in this._tests) {
             const testIndex = parseInt(rawTestIndex)
@@ -203,11 +209,9 @@ export class ResultExpecter {
             )
         }
 
-        console.log()
-
         console.log(
-            colors.lightcyan + 'Testing finished ' + colors.lightyellow +
-				`in ${timeTaken}ms / ${timeTaken / 1000}s` + colors.reset
+            colors.lightcyan + '\n⏱️  Testing finished ' + colors.lightyellow +
+				`in ${timeTaken}ms / ${timeTaken / 1000}s ⏱️` + colors.reset
         )
 
         console.log(passedTestsMessage)
@@ -225,9 +229,7 @@ export class ResultExpecter {
             }
 
             this._logWriter.write(logFilePath)
-
-            console.log()
-            console.log(colors.lightmagenta + 'The full log of this run can be found in:')
+            console.log(colors.lightmagenta + '\n📰 The full log of this run can be found in: 📰')
 
             console.log(
                 colors.magenta + `${currentDirectory}/${cleanLogFilePath}` + colors.reset
@@ -237,7 +239,7 @@ export class ResultExpecter {
 
             console.error(
                 colors.lightred +
-					`Failed to write the log file of this run: ${error.name || 'Error'}: ${error.message}` +
+					`❌ Failed to write the log file of this run: ${error.name || 'Error'}: ${error.message} ❌` +
 				colors.reset
             )
         }
