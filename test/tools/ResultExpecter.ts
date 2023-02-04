@@ -86,16 +86,32 @@ export class ResultExpecter {
         }
 
         const testFor = (expectedType: CLILogType): void => {
+			const testIndex = this._tests.findIndex(test => test.description == description)
+			const test = this._tests[testIndex]
+
             const expectedLogsIncluded =
                 expectedIncludingTypes.warn == receivedIncludingTypes.warn &&
                 expectedIncludingTypes.info == receivedIncludingTypes.info
 
-            const isExpectedTypeIncluded =
-                expectedType == CLILogType.WARN && receivedIncludingTypes.warn == TypeInclusionStatus.INCLUDED ||
-                expectedType == CLILogType.INFO && receivedIncludingTypes.info == TypeInclusionStatus.INCLUDED
+            const isExpectedTypeIncluded = expectedType == CLILogType.WARN || expectedType == CLILogType.INFO
 
-            const receivedType = isExpectedTypeIncluded ? expectedType : getLogType(stdout as string)
-            const isTestPassed = expectedType == receivedType && expectedLogsIncluded
+			const isExpectedTypeInclusion = 
+				test?.expectedType == CLILogType.WARN && 
+				test?.expectedType == CLILogType.INFO
+
+			// console.log('receivedType conds:', isExpectedTypeIncluded, !test?.expectedType, !isExpectedTypeInclusion, (isExpectedTypeIncluded && !test?.expectedType) && !isExpectedTypeInclusion)
+
+			const receivedType = 
+				(isExpectedTypeIncluded && !test?.expectedType) && !isExpectedTypeInclusion ? 
+					CLILogType.ANY : 
+					getLogType(stdout as string)
+
+			const isTestPassed = (
+				receivedType == CLILogType.ANY ||
+				expectedType == CLILogType.ANY ? 
+					true : 
+					expectedType == receivedType
+			) && expectedLogsIncluded
 
             const testObject: ICLITest = {
                 command: cmd,
@@ -108,12 +124,17 @@ export class ResultExpecter {
                 description
             }
 
-            this._tests.push(testObject)
+			if (!test) {
+				this._tests.push(testObject)
+			} else {
+				testObject.expectedType = test.expectedType
+				this._tests.splice(testIndex, 1, testObject)
+			}
         }
 
         const resultIncludingTests = {
             toIncludeWarning(): IResultIncludingTestsFactory {
-                const isLogIncluded = isLogTypeIncluded(CLILogType.WARN, stdout as string)
+				const isLogIncluded = isLogTypeIncluded(CLILogType.WARN, stdout as string)
 
                 expectedIncludingTypes.warn = TypeInclusionStatus.INCLUDED
                 receivedIncludingTypes.warn = isLogIncluded
@@ -182,7 +203,9 @@ export class ResultExpecter {
 
         const logFileInputs = [
             `${cliPackageName}@${cliPackageVersion} - CLI Test - ${finishDate.toLocaleString('en')}`,
-            `Successfully ran ${totalTests} tests:\n${passedTests}/${totalTests} tests passed (${failedTests} tests failed)`,
+            
+			`Successfully ran ${totalTests} tests in ${timeTaken}ms / ${timeTaken / 1000}s\n` + 
+				`${passedTests}/${totalTests} tests passed (${failedTests} tests failed)`,
 
             `Tests List:\n${this._tests.map(
                 (test, testIndex) => `${testIndex + 1}. ${test.description} - expecting for ${test.expectedType}`
@@ -201,19 +224,17 @@ export class ResultExpecter {
                     test.receivedIncludingTypes.info == TypeInclusionStatus.INCLUDED
                 ]
 
-                const logExpectingMessage = isWarnExpected && isInfoExpected ?
+                const logExpectingMessage: LogTypeInclusion = isWarnExpected && isInfoExpected ?
                     'warn and info' :
-                    `${isWarnExpected ?
+                    isWarnExpected ?
                         'warn' :
                         isInfoExpected ? 'info' : 'none'
-                    }`
 
-                const logReceivingMessage = isWarnReceived && isInfoReceived ?
+                const logReceivingMessage: LogTypeInclusion = isWarnReceived && isInfoReceived ?
                     'warn and info' :
-                    `${isWarnReceived ?
+                    isWarnReceived ?
                         'warn' :
                         isInfoReceived ? 'info' : 'none'
-                    }`
 
                 // removing color codes from each line if they are in
                 const filteredCommandOutput = test.stdout
@@ -225,12 +246,16 @@ export class ResultExpecter {
                     )
                     .join('\n')
 
+				const additionalLogsMessage = logExpectingMessage == 'none' ? 
+						'None of the additional log types are required to be included in the output.\n' : 
+						`Expected for ${logExpectingMessage} logs to be included in the output, ` + 
+							`${logReceivingMessage} logs are included.\n`
+
                 const testResultLine =
                     `>>> Test #${testIndex + 1} - "${test.description}" (${test.command}): ` +
                     `${test.passed ? 'passed' : 'failed'}.\nExpected result is "${test.expectedType}", ` +
-                    `received result is "${test.receivedType}".\n` +
-                    `Expected for ${logExpectingMessage} in the output, received ${logReceivingMessage} logs.\n` +
-                    `The output was:\n${filteredCommandOutput}`
+                    `received result is "${test.receivedType}".\n` + additionalLogsMessage +
+					`The command output was:\n${filteredCommandOutput}`
 
                 return testResultLine
             }).join('\n\n\n')
@@ -289,3 +314,5 @@ export class ResultExpecter {
         }
     }
 }
+
+type LogTypeInclusion = 'warn and info' | 'warn' | 'info' | 'none'

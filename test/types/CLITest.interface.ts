@@ -81,5 +81,6 @@ export enum CLILogType {
     INFO = 'info',
     WARN = 'warn',
     ERROR = 'error',
-    NONE = 'none'
+    NONE = 'none',
+	ANY = 'any'
 }

@@ -42,7 +42,7 @@ export class LogWriter {
         try {
             writeFileSync(filePath, textToWrite)
             return true
-        } catch(err) {
+        } catch (err) {
             throw new CLITestError(
                 `Failed to write a log file: ${err.name || 'Error'}: ${err.message}`
             )
