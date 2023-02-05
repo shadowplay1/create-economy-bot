@@ -38,6 +38,10 @@ export class CommandOptionsParser {
             }*/
 
 		    if (!option) {
+                this.logger.info('Test info.')
+                this.logger.warn('Test warn.')
+                // this.logger.hint('Test hint.')
+
                 return this.logger.error(`Invalid option: ${optionsArg}`)
             }
 
