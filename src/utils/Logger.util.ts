@@ -33,14 +33,6 @@ export class Logger {
     }
 
     /**
-     * Sends the hint log in the console.
-     * @param message The message to send.
-     */
-    public hint(message: string): void {
-        return console.log(`${colors.lightcyan}[hint] ${message}${colors.reset}`)
-    }
-
-    /**
      * Sends the warn log in the console.
      * @param message The message to send.
      */

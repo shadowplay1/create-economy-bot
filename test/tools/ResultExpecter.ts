@@ -104,14 +104,23 @@ export class ResultExpecter {
                 expectedType == CLILogType.ANY ||
                 test?.expectedType == CLILogType.ANY
 
+            const isExpectedTypeSuccess =
+				expectedType == CLILogType.SUCCESS ||
+				test?.expectedType == CLILogType.SUCCESS
+
+            const isExpectedTypeError =
+				expectedType == CLILogType.ERROR ||
+				test?.expectedType == CLILogType.ERROR
+
             const isTypeMatching =
-                isExpectedTypeAny
-                    ? true
-                    : expectedType == receivedType
+				isExpectedTypeAny ||
+				(isExpectedTypeSuccess && receivedType == CLILogType.SUCCESS) ||
+				(isExpectedTypeError && receivedType == CLILogType.ERROR)
 
             const isTestPassed = isTypeMatching && expectedLogsIncluded
+            test ? test.passed = isTestPassed : null
 
-            const testObject: ICLITest = {
+		    const testObject: ICLITest = {
                 command: cmd,
                 passed: isTestPassed,
                 expectedType,
@@ -121,38 +130,6 @@ export class ResultExpecter {
                 stdout: stdout as string,
                 description
             }
-
-            if (
-                testObject.expectedType == CLILogType.WARN ||
-                testObject.expectedType == CLILogType.INFO ||
-                testObject.expectedType == CLILogType.ANY
-            ) {
-                const isExpectedTypeAny =
-                    expectedType == CLILogType.ANY ||
-                    testObject.expectedType == CLILogType.ANY
-
-                const isTypeMatching =
-                    isExpectedTypeAny
-                        ? true
-                        : testObject.expectedType == receivedType
-
-                testObject.passed = isTypeMatching && expectedLogsIncluded
-                testObject.expectedType = CLILogType.ANY
-            }
-
-            console.log({
-                testExpectedType: testObject?.expectedType,
-                expectedType,
-                receivedType,
-                expectedLogsIncluded,
-                testDescription: testObject?.description,
-                test: {
-                    isExpectedTypeAny,
-                    areTypesEqual: isExpectedTypeAny ? true : expectedType == receivedType,
-                    areTypesPhysicallyMatch: expectedType == receivedType,
-                    passed: isTestPassed
-                }
-            })
 
             if (!test) {
                 this._tests.push(testObject)
@@ -238,7 +215,8 @@ export class ResultExpecter {
             `${passedTests}/${totalTests} tests passed (${failedTests} tests failed)`,
 
             `Tests List:\n${this._tests.map(
-                (test, testIndex) => `${testIndex + 1}. ${test.description} - expecting for ${test.expectedType}`
+                (test, testIndex) => `${testIndex + 1}. ${test.description} - expecting for ` +
+						(test.expectedType == CLILogType.ANY ? 'any type' : test.expectedType)
             ).join('\n')}\n`,
 
             'Test Results:\n\n' +
