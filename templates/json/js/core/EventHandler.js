@@ -4,7 +4,7 @@ export default class EventHandler {
     name = ''
 
     constructor(client) {
-        this.client = client;
+        this.client = client
     }
 
     execute(...args) {}

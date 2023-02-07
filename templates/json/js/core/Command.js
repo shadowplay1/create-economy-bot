@@ -6,7 +6,7 @@ export default class Command {
     aliases = []
 
     constructor(client) {
-        this.client = client;
+        this.client = client
     }
 
     execute(options) {}
