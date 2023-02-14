@@ -43,8 +43,8 @@ export interface IOption<T extends string | number = string> {
 }
 
 export interface IArguments {
-	required: string[]
-	optional: string[]
+	required?: string[]
+	optional?: string[]
 }
 
 export interface IOptionProps<T extends string | number = string> {

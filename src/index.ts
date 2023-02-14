@@ -20,10 +20,10 @@ const options: IOption[] = [
                     ({ names, shortNames, args, description }) =>
                         'create-economy-bot ' +
                         `${names.join(', ')} (${shortNames.join(', ')})${args ?
-                            `${args.required.map(arg => `<${arg}>`).join(' ')}` +
-                            `${args.optional.length ? ' ' : ''} ` +
+                            `${args?.required?.map(arg => `<${arg}>`).join(' ')}` +
+                            `${args?.optional?.length ? ' ' : ''} ` +
 
-                            `${args.optional.map(arg => `[${arg}]`).join(' ')}` +
+                            `${args?.optional?.map(arg => `[${arg}]`).join(' ')}` +
                             ` - ${description}`
                             : ''
                         }`
@@ -38,7 +38,7 @@ const options: IOption[] = [
         description: 'Test command',
         args: {
             required: ['reqarg1'],
-            optional: ['optarg1']
+            optional: []
         },
         options: [
             {

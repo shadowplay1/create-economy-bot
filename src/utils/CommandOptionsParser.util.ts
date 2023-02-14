@@ -1,8 +1,6 @@
 import { IOption, OptionName, ShortOptionName } from '../types/Option.interface'
 import { Logger } from './Logger.util'
 
-import { log as l } from 'console'
-
 export class CommandOptionsParser {
     public commandOptions: IOption[]
     public logger: Logger
@@ -13,100 +11,65 @@ export class CommandOptionsParser {
     }
 
     public parse(args: string[]): void {
-        l(1)
-
         const options: IOption[] = [...this.commandOptions]
-        const commandArgument = args.length ? args.shift() : ''
 
-        let optionsArg: string
+        const optionArgs = [...args] as OptionName[] | ShortOptionName[]
+        const commandArgument = (args.length ? optionArgs.shift() : '') as OptionName | ShortOptionName
 
-        l(2)
-        l({ args })
+        let tempOptionsArg: string
 
-        while (args.length) {
-            l(3)
+        while (optionArgs.length) {
+            let optionValue: string | undefined
+            tempOptionsArg = optionArgs.shift() as string
 
-            optionsArg = args.shift() as string
+            if (commandArgument.startsWith('-')) {
+                const option = options.find(opt =>
+						opt.names.includes(commandArgument as OptionName) || 
+						opt.shortNames.includes(commandArgument as ShortOptionName)
+                )
 
-            const option = options.find((opt) => {
-                return opt.names.includes(optionsArg as any) || opt.shortNames.includes(optionsArg as any)
+                if (!option) {
+                    return this.logger.error(`Invalid option: ${commandArgument}`)
+                }
+
+                try {
+                    const exactOptionValue = JSON.parse(tempOptionsArg)
+                    optionValue = exactOptionValue
+                } catch {
+                    optionValue = tempOptionsArg
+                }
+
+                // console.log('in loop:', { args, optionArgs, tempOptionsArg, commandArgument, optionValue })
+
+                option.value = optionValue
+                option?.execute({
+                    argument: optionValue,
+                    options: optionArgs.length
+                        ? options.filter(opt =>
+                                opt.names.includes(optionArgs[0] as OptionName) || 
+								opt.shortNames.includes(optionArgs[0] as ShortOptionName)
+							)
+                        : [],
+                })
+            } else {
+                if (!options.find((opt) => opt.args?.required)) {
+                    return this.logger.error(`Unexpected argument: ${tempOptionsArg}`)
+                }
+
+                optionValue = tempOptionsArg
+            }
+        }
+
+        if (!(args.length - 1) && commandArgument) {
+            const option = options.find(opt => {
+                return opt.names.includes(commandArgument as any) || opt.shortNames.includes(commandArgument as any)
             })
 
-            /*
-            if (!option) {
-                return this.logger.error(`Invalid option: ${optionsArg}`)
-            }*/
-
-		    if (!option) {
-                this.logger.info('Test info.')
-                this.logger.warn('Test warn.')
-
-                return this.logger.error(`Invalid option: ${optionsArg}`)
-            }
-
-            if (option.args && option.args.required && !args.length) {
-                return this.logger.error(`Missing required argument for option: ${optionsArg}`)
-            }
-
-
-            l(4)
-
-            // options = (option.options as IOption<string>[]) || []
-
-            if (option.args) {
-
-                l(5)
-
-                const requiredArgs: string[] = []
-
-                option.args.required.forEach(() => {
-                    const arg = args.shift()
-
-                    if (!arg) {
-                        return this.logger.error(`Missing required argument for option: ${arg}`)
-                    }
-
-                    requiredArgs.push(arg)
-                })
-
-                l(6)
-
-                // option.value = args.shift()
-
-                l(7)
-
-                option?.execute({
-                    argument: commandArgument,
-                    options: args.length ? option.options && option.options.find(
-                        opt =>
-                            opt.names.includes(args[1] as OptionName) ||
-                            opt.shortNames.includes(args[1] as ShortOptionName)
-                    ) as any : []
-                })
-
-                option.value = args.shift()
-
-                l(8)
-            } else {
-                l(11)
-
-                // option.value = args.shift()
-
-                l(22)
-
-                option?.execute({
-                    argument: commandArgument,
-                    options: args.length ? option.options && option.options.find(
-                        opt =>
-                            opt.names.includes(args[1] as OptionName) ||
-                            opt.shortNames.includes(args[1] as ShortOptionName)
-                    ) as any : []
-                })
-
-                option.value = args.shift()
-
-                l(33)
-            }
+            option?.execute({
+                argument: '',
+                options: []
+            })
         }
     }
 }
+
