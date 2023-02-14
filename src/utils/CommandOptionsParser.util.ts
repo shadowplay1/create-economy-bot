@@ -24,7 +24,7 @@ export class CommandOptionsParser {
 
             if (commandArgument.startsWith('-')) {
                 const option = options.find(opt =>
-						opt.names.includes(commandArgument as OptionName) || 
+                    opt.names.includes(commandArgument as OptionName) ||
 						opt.shortNames.includes(commandArgument as ShortOptionName)
                 )
 
@@ -39,16 +39,16 @@ export class CommandOptionsParser {
                     optionValue = tempOptionsArg
                 }
 
-                // console.log('in loop:', { args, optionArgs, tempOptionsArg, commandArgument, optionValue })
+                console.log('in loop:', { args, optionArgs, tempOptionsArg, commandArgument, optionValue })
 
                 option.value = optionValue
                 option?.execute({
                     argument: optionValue,
                     options: optionArgs.length
                         ? options.filter(opt =>
-                                opt.names.includes(optionArgs[0] as OptionName) || 
+                            opt.names.includes(optionArgs[0] as OptionName) ||
 								opt.shortNames.includes(optionArgs[0] as ShortOptionName)
-							)
+                        )
                         : [],
                 })
             } else {

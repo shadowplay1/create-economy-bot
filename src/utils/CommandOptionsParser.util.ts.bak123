@@ -1,0 +1,68 @@
+import { IOption, OptionName, ShortOptionName } from '../types/Option.interface'
+import { Logger } from './Logger.util'
+
+export class CommandOptionsParser {
+    public commandOptions: IOption[]
+    public logger: Logger
+
+    constructor(commandOptions: IOption[]) {
+        this.commandOptions = commandOptions
+        this.logger = new Logger()
+    }
+
+    public parse(args: string[]): void {
+        const options: IOption[] = [...this.commandOptions]
+
+        const optionArgs = [...args] as OptionName[] | ShortOptionName[]
+        const executedOptions: IOption[] = []
+
+        while (optionArgs.length) {
+            let optionValue: string | undefined
+            const commandArgument = optionArgs.shift() as OptionName | ShortOptionName
+
+            if (commandArgument.startsWith('-')) {
+                const option = options.find(opt =>
+                    opt.names.includes(commandArgument as OptionName) ||
+                    opt.shortNames.includes(commandArgument as ShortOptionName)
+                )
+
+                if (!option) {
+                    return this.logger.error(`Invalid option: ${commandArgument}`)
+                }
+
+                executedOptions.push(option)
+
+                if (option.args?.required) {
+                    tempOptionsArg = optionArgs.shift() as string
+
+                    try {
+                        const exactOptionValue = JSON.parse(tempOptionsArg)
+                        optionValue = exactOptionValue
+                    } catch {
+                        optionValue = tempOptionsArg
+                    }
+
+                    option.value = optionValue
+                }
+
+                option.execute({
+                    argument: optionValue,
+                    options: executedOptions,
+                })
+            } else {
+                if (!options.find((opt) => opt.args?.required)) {
+                    return this.logger.error(`Unexpected argument: ${commandArgument}`)
+                }
+
+                optionValue = commandArgument
+            }
+        }
+
+        options.forEach((option) => {
+            if (!executedOptions.includes(option) && option.args?.required) {
+                return this.logger.error(`Required option "${option.names[0]}" is missing`)
+            }
+        })
+    }
+}
+
