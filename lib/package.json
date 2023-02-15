@@ -1,0 +1,46 @@
+{
+    "name": "create-economy-bot",
+    "version": "1.0.0",
+    "main": "./dist/src/index.js",
+    "scripts": {
+        "test": "npm run build && ts-node ./test/cli.test.ts",
+        "build": "tsc",
+        "prepare": "npx husky install",
+        "lint": "eslint ./src",
+        "lint:fix": "eslint ./src --fix",
+        "templates:lint": "eslint ./templates --config ./.eslintrc.js",
+        "templates:lint:fix": "eslint ./templates --fix --config ./.eslintrc.js"
+    },
+    "keywords": [
+        "discord",
+        "bot",
+        "eco",
+        "economy",
+        "discord-economy",
+        "discord-economy-super",
+        "mongodb",
+        "discord-economy-bot",
+        "economy-bot",
+        "economy-super",
+        "discord-bot",
+        "create-economy-bot",
+        "shadowplay"
+    ],
+    "author": "shadowplay1",
+    "license": "MIT",
+    "description": "Creates a template Discord economy bot that uses `discord-economy-super`.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/shadowplay1/create-economy-bot.git"
+    },
+    "bugs": {
+        "url": "https://github.com/shadowplay1/create-economy-bot/issues"
+    },
+    "homepage": "https://github.com/shadowplay1/create-economy-bot#readme",
+    "devDependencies": {
+        "@types/node": "^18.11.18",
+        "@typescript-eslint/eslint-plugin": "^5.48.1",
+        "husky": "^8.0.3",
+        "typescript": "^4.9.4"
+    }
+}

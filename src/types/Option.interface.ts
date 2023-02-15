@@ -1,9 +1,10 @@
+import { Logger } from '../utils/Logger.util'
 import { Letters } from './misc/Letters.type'
 
 export type OptionName = `--${string}` | `--${string} ${string}`
 export type ShortOptionName = `-${Letters}` | `-${Letters} ${string}`
 
-export interface IOption<T extends string | number = string> {
+export interface IOption<T extends string | number | boolean = string> {
 
 	/**
 	 * Full option name (will be used like --this).
@@ -26,7 +27,7 @@ export interface IOption<T extends string | number = string> {
 	description: string
 
 	/**
-	 * Option argument (like `create-economy-bot --template my-template`, "my-template" is an option argument)
+	 * Option argument (like `--template my-template`, "my-template" is an option argument)
 	 */
 	value?: T
 
@@ -39,7 +40,7 @@ export interface IOption<T extends string | number = string> {
 	 * Executes the option.
 	 * @param args Options to pass in the option.
 	 */
-	execute<T extends string | number = string>(props: IOptionProps<T>): any
+	execute<T extends string | number | boolean = string>(props: IOptionProps<T>, logger: typeof Logger): any
 }
 
 export interface IArguments {
@@ -47,7 +48,7 @@ export interface IArguments {
 	optional?: string[]
 }
 
-export interface IOptionProps<T extends string | number = string> {
+export interface IOptionProps<T extends string | number | boolean = string> {
 	argument?: string
 	options: Omit<IOption<T>, 'options' | 'execute'>[]
 }
