@@ -40,7 +40,7 @@ export interface IOption<T extends string | number | boolean = string> {
 	 * Executes the option.
 	 * @param args Options to pass in the option.
 	 */
-	execute<T extends string | number | boolean = string>(props: IOptionProps<T>, logger: typeof Logger): any
+	execute<T extends string | number | boolean = string>(props: IOptionProps<T>, logger: Logger): any
 }
 
 export interface IArguments {

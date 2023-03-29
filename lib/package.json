@@ -5,7 +5,8 @@
     "scripts": {
         "test": "npm run build && ts-node ./test/cli.test.ts",
         "build": "tsc",
-        "prepare": "npx husky install",
+        "prep": "npx husky install",
+        "bin": "chmod u+x ./bin/create-economy-bot && npm link",
         "lint": "eslint ./src",
         "lint:fix": "eslint ./src --fix",
         "templates:lint": "eslint ./templates --config ./.eslintrc.js",
@@ -37,6 +38,9 @@
         "url": "https://github.com/shadowplay1/create-economy-bot/issues"
     },
     "homepage": "https://github.com/shadowplay1/create-economy-bot#readme",
+    "bin": {
+        "create-economy-bot": "node ./bin/create-economy-bot"
+    },
     "devDependencies": {
         "@types/node": "^18.11.18",
         "@typescript-eslint/eslint-plugin": "^5.48.1",
