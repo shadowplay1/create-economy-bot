@@ -8,10 +8,10 @@ const args = processArgv as OptionName[] | ShortOptionName[]
 
 const main = async (): Promise<void> => {
     const options: IOption[] = []
-    const optionsFiles = readdirSync('./options')
+    const optionsFiles = readdirSync(__dirname + '/options')
 
     for (const optionsFile of optionsFiles) {
-        const optionsObject = await import(`./options/${optionsFile}`)
+        const optionsObject = await import(__dirname + `/options/${optionsFile}`)
         options.push(optionsObject.default)
     }
 
